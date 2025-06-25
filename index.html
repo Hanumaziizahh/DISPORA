@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Sistem Inventaris DISPORA</title>
+        <link href="css/styles.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="Logo DISPORA" style="height: 30px; margin-l: 100px;">Sistem Inventaris
+            </a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Cari barang..." aria-label="Search" aria-describedby="basic-addon2" id="searchBarangDashboard" onkeyup="searchBarangDashboard()"/>
+                    <div class="input-group-append">
+                        <button class="btn btn-dark" type="button" onclick="searchBarangDashboard()"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            <ul class="navbar-nav ml-auto ml-md-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">Settings</a>
+                        <a class="dropdown-item" href="#">Activity Log</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="login.html">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Admin</div>
+                            <a class="nav-link" href="index.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+							<a class="nav-link" href="databarang.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
+                                Data Barang
+                            </a>
+							<a class="nav-link" href="transaksi.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>
+                                Transaksi
+                            </a>
+							<a class="nav-link" href="laporan.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
+                                Laporan
+                            </a>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                                Akun
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Authentication
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="login.html">Login</a>
+                                            <a class="nav-link" href="register.html">Register</a>
+                                            <a class="nav-link" href="password.html">Forgot Password</a>
+                                        </nav>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+                        <h1 class="mt-4">Dashboard Inventaris</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Dinas Pemuda dan Olahraga Kota Tangerang</li>
+                        </ol>
+
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-primary text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="text-white-50"style="color: white !important;">Total Barang</div>
+                                                <div class="h5" id="totalBarang" style="color: white !important;">0</div>
+                                            </div>
+                                            <i class="fas fa-cubes fa-2x" style="color: white !important;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-success text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="text-white-50"style="color: white !important;">Kondisi Baik</div>
+                                                <div class="h5" id="barangBaik"style="color: white !important;">0</div>
+                                            </div>
+                                            <i class="fas fa-check-circle fa-2x" style="color: white !important;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="text-white-50"style="color: white !important;">Perlu Perbaikan</div>
+                                                <div class="h5" id="barangRusak"style="color: white !important;">0</div>
+                                            </div>
+                                            <i class="fas fa-wrench fa-2x" style="color: white !important;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="text-white-50"style="color: white !important;">Nilai Total</div>
+                                                <div class="h5" id="nilaiTotal"style="color: white !important;">Rp 0</div>
+                                            </div>
+                                            <i class="fas fa-money-bill-wave fa-2x" style="color: white !important;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table mr-1"></i>
+                                Barang Terbaru
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="recentItemsTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Kode Barang</th>
+                                                <th>Nama Barang</th>
+                                                <th>Kategori</th>
+                                                <th>Kondisi</th>
+                                                <th>Tanggal Input</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentItemsBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">Belum ada data barang</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/chart-area-demo.js"></script>
+        <script src="assets/demo/chart-bar-demo.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/datatables-demo.js"></script>
+		<script>
+            // Data Storage (pastikan ini sama di semua file HTML yang membutuhkan data inventaris/transaksi)
+            let inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
+            let transactionData = JSON.parse(localStorage.getItem('transactionData')) || [];
+
+            // Inisialisasi saat halaman dimuat
+            document.addEventListener('DOMContentLoaded', function() {
+                loadSampleData(); // Muat data sampel jika belum ada data di localStorage
+                updateDashboard(); // Perbarui dashboard saat halaman dimuat
+
+                // Anda tidak perlu memanggil fungsi-fungsi dari halaman lain di sini
+                // updateBarangTable(); (dari index2.html)
+                // updateTransaksiTable(); (dari index3.html)
+                // updateKodeBarangSelect(); (dari index3.html)
+                // generateLaporan(); (dari index4.html)
+            });
+
+            // Fungsi utilitas untuk format Rupiah
+            function formatRupiah(amount) {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(amount);
+            }
+
+            // Fungsi untuk memperbarui tampilan dashboard dan tabel Barang Terbaru
+            // Parameter `dataToDisplay` digunakan untuk menampilkan data hasil filter
+            function updateDashboard(dataToDisplay = inventoryData) { 
+                const totalBarang = inventoryData.reduce((sum, item) => sum + item.jumlah, 0);
+                const barangBaik = inventoryData.filter(item => item.kondisi === 'Baik').reduce((sum, item) => sum + item.jumlah, 0);
+                const barangRusak = inventoryData.filter(item => item.kondisi === 'Rusak').reduce((sum, item) => sum + item.jumlah, 0);
+                const nilaiTotal = inventoryData.reduce((sum, item) => sum + (item.jumlah * item.harga), 0);
+                
+                document.getElementById('totalBarang').textContent = totalBarang;
+                document.getElementById('barangBaik').textContent = barangBaik;
+                document.getElementById('barangRusak').textContent = barangRusak;
+                document.getElementById('nilaiTotal').textContent = formatRupiah(nilaiTotal);
+                
+                // Perbarui tabel Barang Terbaru dengan data yang diberikan (bisa data semua atau data hasil filter)
+                // Mengambil 5 item terakhir dan membalik urutan agar yang terbaru di atas
+                const recentItems = dataToDisplay.slice(-5).reverse(); 
+                const tbody = document.getElementById('recentItemsBody');
+                
+                tbody.innerHTML = ''; // Kosongkan baris yang ada
+                
+                if (recentItems.length > 0) {
+                    recentItems.forEach(item => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${item.kode}</td>
+                            <td>${item.nama}</td>
+                            <td>${item.kategori}</td>
+                            <td><span class="status-badge status-${item.kondisi.toLowerCase()}">${item.kondisi}</span></td>
+                            <td>${item.tanggal}</td>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Belum ada data barang atau tidak ada yang cocok dengan pencarian Anda</td></tr>';
+                }
+            }
+
+            // Fungsi Pencarian untuk tabel Barang Terbaru di Dashboard
+            function searchBarangDashboard() {
+                const searchTerm = document.getElementById('searchBarangDashboard').value.toLowerCase();
+                
+                // Filter inventoryData berdasarkan istilah pencarian
+                const filteredItems = inventoryData.filter(item => 
+                    item.kode.toLowerCase().includes(searchTerm) ||
+                    item.nama.toLowerCase().includes(searchTerm) ||
+                    item.kategori.toLowerCase().includes(searchTerm) ||
+                    item.lokasi.toLowerCase().includes(searchTerm) ||
+                    item.kondisi.toLowerCase().includes(searchTerm) ||
+                    (item.tanggal && item.tanggal.includes(searchTerm)) // Pastikan item.tanggal ada
+                );
+                
+                // Perbarui tampilan dashboard hanya pada bagian tabel Barang Terbaru
+                updateDashboard(filteredItems); 
+            }
+
+            // Fungsi untuk memuat data sampel (opsional - hanya untuk demo)
+            function loadSampleData() {
+                // Hanya muat data sampel jika inventoryData kosong di localStorage
+                if (localStorage.getItem('inventoryData') === null || JSON.parse(localStorage.getItem('inventoryData')).length === 0) {
+                    const sampleData = [
+                        {
+                            kode: 'OR001',
+                            nama: 'Bola Sepak',
+                            kategori: 'Olahraga',
+                            kondisi: 'Baik',
+                            jumlah: 10,
+                            harga: 150000,
+                            lokasi: 'Gudang Olahraga',
+                            keterangan: 'Bola sepak untuk kegiatan olahraga',
+                            tanggal: '2024-01-15' // Format tanggal YYYY-MM-DD
+                        },
+                        {
+                            kode: 'EL001',
+                            nama: 'Komputer Desktop',
+                            kategori: 'Elektronik',
+                            kondisi: 'Baik',
+                            jumlah: 5,
+                            harga: 8000000,
+                            lokasi: 'Ruang Sekretariat',
+                            keterangan: 'Komputer untuk administrasi',
+                            tanggal: '2024-01-20'
+                        },
+                        {
+                            kode: 'FU001',
+                            nama: 'Meja Kerja',
+                            kategori: 'Furniture',
+                            kondisi: 'Baik',
+                            jumlah: 8,
+                            harga: 1500000,
+                            lokasi: 'Ruang Sekretariat',
+                            keterangan: 'Meja kerja kayu jati',
+                            tanggal: '2024-01-25'
+                        },
+                        {
+                            kode: 'OR002',
+                            nama: 'Raket Badminton',
+                            kategori: 'Olahraga',
+                            kondisi: 'Rusak',
+                            jumlah: 2,
+                            harga: 300000,
+                            lokasi: 'Gudang Olahraga',
+                            keterangan: 'Senar putus',
+                            tanggal: '2024-02-01'
+                        },
+                        {
+                            kode: 'ATK001',
+                            nama: 'Pulpen',
+                            kategori: 'ATK',
+                            kondisi: 'Baik',
+                            jumlah: 50,
+                            harga: 5000,
+                            lokasi: 'Lemari ATK',
+                            keterangan: 'Pulpen standar',
+                            tanggal: '2024-02-10'
+                        }
+                    ];
+                    
+                    inventoryData = sampleData;
+                    localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                }
+            }
+        </script>
+    </body>
+</html>
