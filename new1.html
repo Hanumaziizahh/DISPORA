@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Sistem Inventaris</title>
+    <style>
+        /* ... (CSS Anda yang sudah ada) ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            color: #2c3e50;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin-bottom: 5px;
+            font-size: 2rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .setting-description {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background-color: #bdc3c7;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-switch.active {
+            background-color: #3498db;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        .dropdown {
+            padding: 8px 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .dropdown:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .input-field {
+            padding: 10px 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 120px;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .general { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .system { background: linear-gradient(135deg, #27ae60, #229954); }
+        .security { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .notifications { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .backup { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .reports { background: linear-gradient(135deg, #1abc9c, #16a085); }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #2c2c2c; /* Background gelap */
+            color: #e0e0e0; /* Warna teks terang */
+        }
+
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #4a4a4a 0%, #333333 100%); /* Header gelap */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .settings-card {
+            background: #3a3a3a; /* Kartu gelap */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .card-title {
+            color: #f5f6fa; /* Warna judul kartu terang */
+        }
+
+        body.dark-mode .setting-item {
+            border-bottom: 1px solid #4a4a4a; /* Border item gelap */
+        }
+
+        body.dark-mode .setting-label {
+            color: #e0e0e0; /* Warna label terang */
+        }
+
+        body.dark-mode .setting-description {
+            color: #b0b0b0; /* Warna deskripsi terang */
+        }
+
+        body.dark-mode .input-field,
+        body.dark-mode .dropdown {
+            background: #4a4a4a; /* Input/dropdown gelap */
+            color: #e0e0e0; /* Teks input/dropdown terang */
+            border-color: #5a5a5a; /* Border input/dropdown gelap */
+        }
+
+        body.dark-mode .input-field:focus,
+        body.dark-mode .dropdown:focus {
+            border-color: #3498db; /* Border fokus tetap biru */
+        }
+
+        body.dark-mode .toggle-switch {
+            background-color: #5a5a5a; /* Warna toggle switch default gelap */
+        }
+
+        body.dark-mode .toggle-switch.active {
+            background-color: #3498db; /* Warna toggle switch aktif tetap biru */
+        }
+
+        body.dark-mode .success-message {
+            background: #28a745; /* Background pesan sukses gelap */
+            color: #ffffff; /* Teks pesan sukses terang */
+            border-left-color: #1a7e33;
+        }
+
+        /* Sesuaikan warna ikon kartu jika perlu agar lebih terlihat di mode gelap */
+        body.dark-mode .card-icon.general { background: linear-gradient(135deg, #3498db, #2980b9); } /* Tetap biru */
+        body.dark-mode .card-icon.system { background: linear-gradient(135deg, #27ae60, #229954); } /* Tetap hijau */
+        body.dark-mode .card-icon.security { background: linear-gradient(135deg, #e74c3c, #c0392b); } /* Tetap merah */
+        body.dark-mode .card-icon.notifications { background: linear-gradient(135deg, #f39c12, #e67e22); } /* Tetap orange */
+        body.dark-mode .card-icon.backup { background: linear-gradient(135deg, #9b59b6, #8e44ad); } /* Tetap ungu */
+        body.dark-mode .card-icon.reports { background: linear-gradient(135deg, #1abc9c, #16a085); } /* Tetap turquoise */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚙️ Pengaturan Sistem</h1>
+        <p>Kelola konfigurasi dan preferensi sistem inventaris Anda</p>
+    </div>
+
+    <div class="container">
+        <div class="success-message" id="successMessage">
+            ✅ Pengaturan berhasil disimpan!
+        </div>
+
+        <div class="settings-grid">
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon general">⚙️</div>
+                    <div class="card-title">Pengaturan Umum</div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Nama Perusahaan</div>
+                        <div class="setting-description">Nama yang ditampilkan di laporan</div>
+                    </div>
+                    <input type="text" class="input-field" id="companyNameInput" value="DISPORA" style="width: 150px;">
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Bahasa Sistem</div>
+                        <div class="setting-description">Pilih bahasa interface</div>
+                    </div>
+                    <select class="dropdown" id="systemLanguage"> 
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Zona Waktu</div>
+                        <div class="setting-description">Zona waktu untuk sistem</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="WIB">WIB (UTC+7)</option>
+                        <option value="WITA">WITA (UTC+8)</option>
+                        <option value="WIT">WIT (UTC+9)</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Format Mata Uang</div>
+                        <div class="setting-description">Format tampilan mata uang</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="IDR">Rupiah (Rp)</option>
+                        <option value="USD">Dollar ($)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon system">🖥️</div>
+                    <div class="card-title">Pengaturan Sistem</div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Mode Gelap</div>
+                        <div class="setting-description">Aktifkan tema gelap</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Auto-Save</div>
+                        <div class="setting-description">Simpan otomatis setiap perubahan</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Items per Halaman</div>
+                        <div class="setting-description">Jumlah item yang ditampilkan</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Kompresi Gambar</div>
+                        <div class="setting-description">Kompres gambar untuk menghemat ruang</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon security">🔒</div>
+                    <div class="card-title">Keamanan</div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Two-Factor Authentication</div>
+                        <div class="setting-description">Keamanan berlapis untuk akun</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Session Timeout</div>
+                        <div class="setting-description">Auto logout setelah tidak aktif</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="30">30 menit</option>
+                        <option value="60" selected>1 jam</option>
+                        <option value="120">2 jam</option>
+                        <option value="480">8 jam</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Log Aktivitas</div>
+                        <div class="setting-description">Catat semua aktivitas pengguna</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary">🔑 Ubah Password</button>
+                    <button class="btn btn-danger">📤 Export Data</button>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon notifications">🔔</div>
+                    <div class="card-title">Notifikasi</div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Email Notifications</div>
+                        <div class="setting-description">Terima notifikasi via email</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Stock Alert</div>
+                        <div class="setting-description">Peringatan stok menipis</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Minimum Stock Level</div>
+                        <div class="setting-description">Batas minimum untuk alert</div>
+                    </div>
+                    <input type="number" class="input-field" value="5" min="1">
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Report Notifications</div>
+                        <div class="setting-description">Notifikasi laporan otomatis</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon backup">💾</div>
+                    <div class="card-title">Backup & Restore</div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Auto Backup</div>
+                        <div class="setting-description">Backup otomatis database</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Backup Frequency</div>
+                        <div class="setting-description">Frekuensi backup otomatis</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="daily" selected>Harian</option>
+                        <option value="weekly">Mingguan</option>
+                        <option value="monthly">Bulanan</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Backup Location</div>
+                        <div class="setting-description">Lokasi penyimpanan backup</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="local" selected>Local Server</option>
+                        <option value="cloud">Cloud Storage</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="showSuccess()">📥 Backup Sekarang</button>
+                    <button class="btn btn-primary">📤 Restore Data</button>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon reports">📊</div>
+                    <div class="card-title">Pengaturan Laporan</div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Auto Generate Reports</div>
+                        <div class="setting-description">Buat laporan otomatis</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Report Format</div>
+                        <div class="setting-description">Format default laporan</div>
+                    </div>
+                    <select class="dropdown">
+                        <option value="pdf" selected>PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Include Charts</div>
+                        <div class="setting-description">Sertakan grafik dalam laporan</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Email Reports</div>
+                        <div class="setting-description">Kirim laporan via email</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn btn-success" onclick="saveAllSettings()" style="padding: 15px 40px; font-size: 1.1rem;">
+                💾 Simpan Semua Pengaturan
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Objek untuk terjemahan
+        const translations = {
+            'id': {
+                'systemSettingsTitle': '⚙️ Pengaturan Sistem',
+                'systemSettingsDescription': 'Kelola konfigurasi dan preferensi sistem inventaris Anda',
+                'successMessage': '✅ Pengaturan berhasil disimpan!',
+                'generalSettingsTitle': 'Pengaturan Umum',
+                'companyNameLabel': 'Nama Perusahaan',
+                'companyNameDescription': 'Nama yang ditampilkan di laporan',
+                'systemLanguageLabel': 'Bahasa Sistem',
+                'systemLanguageDescription': 'Pilih bahasa interface',
+                'timeZoneLabel': 'Zona Waktu',
+                'timeZoneDescription': 'Zona waktu untuk sistem',
+                'currencyFormatLabel': 'Format Mata Uang',
+                'currencyFormatDescription': 'Format tampilan mata uang',
+                'systemTitle': 'Pengaturan Sistem',
+                'darkModeLabel': 'Mode Gelap',
+                'darkModeDescription': 'Aktifkan tema gelap',
+                'autoSaveLabel': 'Auto-Save',
+                'autoSaveDescription': 'Simpan otomatis setiap perubahan',
+                'itemsPerPageLabel': 'Items per Halaman',
+                'itemsPerPageDescription': 'Jumlah item yang ditampilkan',
+                'imageCompressionLabel': 'Kompresi Gambar',
+                'imageCompressionDescription': 'Kompres gambar untuk menghemat ruang',
+                'securityTitle': 'Keamanan',
+                'twoFactorAuthLabel': 'Two-Factor Authentication',
+                'twoFactorAuthDescription': 'Keamanan berlapis untuk akun',
+                'sessionTimeoutLabel': 'Session Timeout',
+                'sessionTimeoutDescription': 'Auto logout setelah tidak aktif',
+                'activityLogLabel': 'Log Aktivitas',
+                'activityLogDescription': 'Catat semua aktivitas pengguna',
+                'changePasswordBtn': '🔑 Ubah Password',
+                'exportDataBtn': '📤 Export Data',
+                'notificationsTitle': 'Notifikasi',
+                'emailNotificationsLabel': 'Email Notifications',
+                'emailNotificationsDescription': 'Terima notifikasi via email',
+                'stockAlertLabel': 'Stock Alert',
+                'stockAlertDescription': 'Peringatan stok menipis',
+                'minimumStockLevelLabel': 'Minimum Stock Level',
+                'minimumStockLevelDescription': 'Batas minimum untuk alert',
+                'reportNotificationsLabel': 'Report Notifications',
+                'reportNotificationsDescription': 'Notifikasi laporan otomatis',
+                'backupRestoreTitle': 'Backup & Restore',
+                'autoBackupLabel': 'Auto Backup',
+                'autoBackupDescription': 'Backup otomatis database',
+                'backupFrequencyLabel': 'Backup Frequency',
+                'backupFrequencyDescription': 'Frekuensi backup otomatis',
+                'backupLocationLabel': 'Backup Location',
+                'backupLocationDescription': 'Lokasi penyimpanan backup',
+                'backupNowBtn': '📥 Backup Sekarang',
+                'restoreDataBtn': '📤 Restore Data',
+                'reportSettingsTitle': 'Pengaturan Laporan',
+                'autoGenerateReportsLabel': 'Auto Generate Reports',
+                'autoGenerateReportsDescription': 'Buat laporan otomatis',
+                'reportFormatLabel': 'Report Format',
+                'reportFormatDescription': 'Format default laporan',
+                'includeChartsLabel': 'Include Charts',
+                'includeChartsDescription': 'Sertakan grafik dalam laporan',
+                'emailReportsLabel': 'Email Reports',
+                'emailReportsDescription': 'Kirim laporan via email',
+                'saveAllSettingsBtn': '💾 Simpan Semua Pengaturan',
+                'dailyOption': 'Harian',
+                'weeklyOption': 'Mingguan',
+                'monthlyOption': 'Bulanan',
+                'localServerOption': 'Local Server',
+                'cloudStorageOption': 'Cloud Storage',
+                'pdfOption': 'PDF',
+                'excelOption': 'Excel',
+                'csvOption': 'CSV',
+                'minutes30Option': '30 menit',
+                'hour1Option': '1 jam',
+                'hour2Option': '2 jam',
+                'hour8Option': '8 jam',
+                'items10Option': '10',
+                'items25Option': '25',
+                'items50Option': '50',
+                'items100Option': '100'
+            },
+            'en': {
+                'systemSettingsTitle': '⚙️ System Settings',
+                'systemSettingsDescription': 'Manage your inventory system configurations and preferences',
+                'successMessage': '✅ Settings saved successfully!',
+                'generalSettingsTitle': 'General Settings',
+                'companyNameLabel': 'Company Name',
+                'companyNameDescription': 'Name displayed in reports',
+                'systemLanguageLabel': 'System Language',
+                'systemLanguageDescription': 'Select interface language',
+                'timeZoneLabel': 'Time Zone',
+                'timeZoneDescription': 'Time zone for the system',
+                'currencyFormatLabel': 'Currency Format',
+                'currencyFormatDescription': 'Currency display format',
+                'systemTitle': 'System Settings',
+                'darkModeLabel': 'Dark Mode',
+                'darkModeDescription': 'Activate dark theme',
+                'autoSaveLabel': 'Auto-Save',
+                'autoSaveDescription': 'Automatically save changes',
+                'itemsPerPageLabel': 'Items per Page',
+                'itemsPerPageDescription': 'Number of items displayed',
+                'imageCompressionLabel': 'Image Compression',
+                'imageCompressionDescription': 'Compress images to save space',
+                'securityTitle': 'Security',
+                'twoFactorAuthLabel': 'Two-Factor Authentication',
+                'twoFactorAuthDescription': 'Layered security for account',
+                'sessionTimeoutLabel': 'Session Timeout',
+                'sessionTimeoutDescription': 'Auto logout after inactivity',
+                'activityLogLabel': 'Activity Log',
+                'activityLogDescription': 'Log all user activities',
+                'changePasswordBtn': '🔑 Change Password',
+                'exportDataBtn': '📤 Export Data',
+                'notificationsTitle': 'Notifications',
+                'emailNotificationsLabel': 'Email Notifications',
+                'emailNotificationsDescription': 'Receive notifications via email',
+                'stockAlertLabel': 'Stock Alert',
+                'stockAlertDescription': 'Low stock warning',
+                'minimumStockLevelLabel': 'Minimum Stock Level',
+                'minimumStockLevelDescription': 'Minimum limit for alerts',
+                'reportNotificationsLabel': 'Report Notifications',
+                'reportNotificationsDescription': 'Automatic report notifications',
+                'backupRestoreTitle': 'Backup & Restore',
+                'autoBackupLabel': 'Auto Backup',
+                'autoBackupDescription': 'Automatic database backup',
+                'backupFrequencyLabel': 'Backup Frequency',
+                'backupFrequencyDescription': 'Automatic backup frequency',
+                'backupLocationLabel': 'Backup Location',
+                'backupLocationDescription': 'Backup storage location',
+                'backupNowBtn': '📥 Backup Now',
+                'restoreDataBtn': '📤 Restore Data',
+                'reportSettingsTitle': 'Report Settings',
+                'autoGenerateReportsLabel': 'Auto Generate Reports',
+                'autoGenerateReportsDescription': 'Generate reports automatically',
+                'reportFormatLabel': 'Report Format',
+                'reportFormatDescription': 'Default report format',
+                'includeChartsLabel': 'Include Charts',
+                'includeChartsDescription': 'Include charts in reports',
+                'emailReportsLabel': 'Email Reports',
+                'emailReportsDescription': 'Send reports via email',
+                'saveAllSettingsBtn': '💾 Save All Settings',
+                'dailyOption': 'Daily',
+                'weeklyOption': 'Weekly',
+                'monthlyOption': 'Monthly',
+                'localServerOption': 'Local Server',
+                'cloudStorageOption': 'Cloud Storage',
+                'pdfOption': 'PDF',
+                'excelOption': 'Excel',
+                'csvOption': 'CSV',
+                'minutes30Option': '30 minutes',
+                'hour1Option': '1 hour',
+                'hour2Option': '2 hours',
+                'hour8Option': '8 hours',
+                'items10Option': '10',
+                'items25Option': '25',
+                'items50Option': '50',
+                'items100Option': '100'
+            }
+        };
+
+        function setLanguage(lang) {
+            // Simpan preferensi bahasa ke localStorage
+            localStorage.setItem('systemLanguage', lang);
+
+            // Perbarui semua elemen teks berdasarkan bahasa yang dipilih
+            document.querySelector('.header h1').textContent = translations[lang].systemSettingsTitle;
+            document.querySelector('.header p').textContent = translations[lang].systemSettingsDescription;
+            document.getElementById('successMessage').textContent = translations[lang].successMessage;
+
+            // Pengaturan Umum
+            document.querySelector('.settings-card:nth-child(1) .card-title').textContent = translations[lang].generalSettingsTitle;
+            // ... (Kode terjemahan lainnya) ...
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].companyNameLabel;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].companyNameDescription;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].systemLanguageLabel;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].systemLanguageDescription;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].timeZoneLabel;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].timeZoneDescription;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(5) .setting-label').textContent = translations[lang].currencyFormatLabel;
+            document.querySelector('.settings-card:nth-child(1) .setting-item:nth-child(5) .setting-description').textContent = translations[lang].currencyFormatDescription;
+
+            // Pengaturan Sistem
+            document.querySelector('.settings-card:nth-child(2) .card-title').textContent = translations[lang].systemTitle;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].darkModeLabel;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].darkModeDescription;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].autoSaveLabel;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].autoSaveDescription;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].itemsPerPageLabel;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].itemsPerPageDescription;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(5) .setting-label').textContent = translations[lang].imageCompressionLabel;
+            document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(5) .setting-description').textContent = translations[lang].imageCompressionDescription;
+
+            // Pengaturan Keamanan
+            document.querySelector('.settings-card:nth-child(3) .card-title').textContent = translations[lang].securityTitle;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].twoFactorAuthLabel;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].twoFactorAuthDescription;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].sessionTimeoutLabel;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].sessionTimeoutDescription;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].activityLogLabel;
+            document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].activityLogDescription;
+            document.querySelector('.settings-card:nth-child(3) .action-buttons .btn-primary').textContent = translations[lang].changePasswordBtn;
+            document.querySelector('.settings-card:nth-child(3) .action-buttons .btn-danger').textContent = translations[lang].exportDataBtn;
+
+            // Notifikasi
+            document.querySelector('.settings-card:nth-child(4) .card-title').textContent = translations[lang].notificationsTitle;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].emailNotificationsLabel;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].emailNotificationsDescription;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].stockAlertLabel;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].stockAlertDescription;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].minimumStockLevelLabel;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].minimumStockLevelDescription;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(5) .setting-label').textContent = translations[lang].reportNotificationsLabel;
+            document.querySelector('.settings-card:nth-child(4) .setting-item:nth-child(5) .setting-description').textContent = translations[lang].reportNotificationsDescription;
+
+            // Backup & Restore
+            document.querySelector('.settings-card:nth-child(5) .card-title').textContent = translations[lang].backupRestoreTitle;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].autoBackupLabel;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].autoBackupDescription;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].backupFrequencyLabel;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].backupFrequencyDescription;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].backupLocationLabel;
+            document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].backupLocationDescription;
+            document.querySelector('.settings-card:nth-child(5) .action-buttons .btn-success').textContent = translations[lang].backupNowBtn;
+            document.querySelector('.settings-card:nth-child(5) .action-buttons .btn-primary').textContent = translations[lang].restoreDataBtn;
+
+            // Pengaturan Laporan
+            document.querySelector('.settings-card:nth-child(6) .card-title').textContent = translations[lang].reportSettingsTitle;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(2) .setting-label').textContent = translations[lang].autoGenerateReportsLabel;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(2) .setting-description').textContent = translations[lang].autoGenerateReportsDescription;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(3) .setting-label').textContent = translations[lang].reportFormatLabel;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(3) .setting-description').textContent = translations[lang].reportFormatDescription;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(4) .setting-label').textContent = translations[lang].includeChartsLabel;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(4) .setting-description').textContent = translations[lang].includeChartsDescription;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(5) .setting-label').textContent = translations[lang].emailReportsLabel;
+            document.querySelector('.settings-card:nth-child(6) .setting-item:nth-child(5) .setting-description').textContent = translations[lang].emailReportsDescription;
+
+            document.querySelector('.btn-success[onclick="saveAllSettings()"]').textContent = translations[lang].saveAllSettingsBtn;
+
+            // Perbarui teks opsi dropdown
+            // Untuk "Backup Frequency"
+            const backupFrequencyDropdown = document.querySelector('.settings-card:nth-child(5) .dropdown');
+            if (backupFrequencyDropdown) {
+                backupFrequencyDropdown.querySelector('option[value="daily"]').textContent = translations[lang].dailyOption;
+                backupFrequencyDropdown.querySelector('option[value="weekly"]').textContent = translations[lang].weeklyOption;
+                backupFrequencyDropdown.querySelector('option[value="monthly"]').textContent = translations[lang].monthlyOption;
+            }
+
+            // Untuk "Backup Location"
+            const backupLocationDropdown = document.querySelector('.settings-card:nth-child(5) .setting-item:nth-child(4) .dropdown');
+            if (backupLocationDropdown) {
+                backupLocationDropdown.querySelector('option[value="local"]').textContent = translations[lang].localServerOption;
+                backupLocationDropdown.querySelector('option[value="cloud"]').textContent = translations[lang].cloudStorageOption;
+            }
+
+            // Untuk "Report Format"
+            const reportFormatDropdown = document.querySelector('.settings-card:nth-child(6) .dropdown');
+            if (reportFormatDropdown) {
+                reportFormatDropdown.querySelector('option[value="pdf"]').textContent = translations[lang].pdfOption;
+                reportFormatDropdown.querySelector('option[value="excel"]').textContent = translations[lang].excelOption;
+                reportFormatDropdown.querySelector('option[value="csv"]').textContent = translations[lang].csvOption;
+            }
+
+            // Untuk "Session Timeout"
+            const sessionTimeoutDropdown = document.querySelector('.settings-card:nth-child(3) .setting-item:nth-child(3) .dropdown');
+            if (sessionTimeoutDropdown) {
+                sessionTimeoutDropdown.querySelector('option[value="30"]').textContent = translations[lang].minutes30Option;
+                sessionTimeoutDropdown.querySelector('option[value="60"]').textContent = translations[lang].hour1Option;
+                sessionTimeoutDropdown.querySelector('option[value="120"]').textContent = translations[lang].hour2Option;
+                sessionTimeoutDropdown.querySelector('option[value="480"]').textContent = translations[lang].hour8Option;
+            }
+
+            // Untuk "Items per Halaman"
+            const itemsPerPageDropdown = document.querySelector('.settings-card:nth-child(2) .setting-item:nth-child(4) .dropdown');
+            if (itemsPerPageDropdown) {
+                itemsPerPageDropdown.querySelector('option[value="10"]').textContent = translations[lang].items10Option;
+                itemsPerPageDropdown.querySelector('option[value="25"]').textContent = translations[lang].items25Option;
+                itemsPerPageDropdown.querySelector('option[value="50"]').textContent = translations[lang].items50Option;
+                itemsPerPageDropdown.querySelector('option[value="100"]').textContent = translations[lang].items100Option;
+            }
+
+            // Update selected option in dropdown
+            document.getElementById('systemLanguage').value = lang;
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const isDarkModeToggle = element.closest('.setting-item').querySelector('.setting-label').textContent.includes('Mode Gelap') ||
+                                     element.closest('.setting-item').querySelector('.setting-label').textContent.includes('Dark Mode');
+
+            if (isDarkModeToggle) {
+                const isDarkModeActive = element.classList.contains('active');
+                document.body.classList.toggle('dark-mode', isDarkModeActive);
+                localStorage.setItem('darkMode', isDarkModeActive ? 'enabled' : 'disabled');
+            }
+        }
+
+        function showSuccess() {
+            const message = document.getElementById('successMessage');
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        function saveAllSettings() {
+            // Ambil nilai bahasa yang dipilih
+            const selectedLanguage = document.getElementById('systemLanguage').value;
+            setLanguage(selectedLanguage); // Panggil setLanguage untuk menyimpan dan menerapkan
+
+            // Ambil nilai Nama Perusahaan
+            const companyName = document.getElementById('companyNameInput').value;
+            // Simpan Nama Perusahaan ke localStorage
+            localStorage.setItem('companyName', companyName);
+
+            showSuccess();
+            console.log('Saving all settings, including language and company name:', selectedLanguage, companyName);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Muat preferensi bahasa yang tersimpan saat halaman dimuat
+            const savedLanguage = localStorage.getItem('systemLanguage') || 'id'; // Default ke 'id' jika tidak ada
+            setLanguage(savedLanguage);
+
+            // Muat preferensi Nama Perusahaan yang tersimpan
+            const savedCompanyName = localStorage.getItem('companyName');
+            if (savedCompanyName) {
+                document.getElementById('companyNameInput').value = savedCompanyName;
+            }
+
+            // Tambahkan event listener untuk dropdown bahasa agar langsung berubah
+            const systemLanguageDropdown = document.getElementById('systemLanguage');
+            if (systemLanguageDropdown) {
+                systemLanguageDropdown.addEventListener('change', function() {
+                    setLanguage(this.value);
+                });
+            }
+
+            // Muat preferensi mode gelap saat halaman dimuat
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const darkModeToggleElement = document.querySelector('.setting-item:has(.setting-label:contains("Mode Gelap")) .toggle-switch') ||
+                                         document.querySelector('.setting-item:has(.setting-label:contains("Dark Mode")) .toggle-switch');
+            
+            if (savedDarkMode === 'enabled' && darkModeToggleElement) {
+                document.body.classList.add('dark-mode');
+                darkModeToggleElement.classList.add('active');
+            } else if (savedDarkMode === 'disabled' && darkModeToggleElement) {
+                document.body.classList.remove('dark-mode');
+                darkModeToggleElement.classList.remove('active');
+            }
+
+            console.log('Settings page loaded');
+        });
+    </script>
+</body>
+</html>
