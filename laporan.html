@@ -165,290 +165,292 @@
         <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/datatables-demo.js"></script>
 		    <script>
-        // Data Storage
-        let inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
-        let transactionData = JSON.parse(localStorage.getItem('transactionData')) || [];
+    // Data Storage
+    let inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
+    let transactionData = JSON.parse(localStorage.getItem('transactionData')) || [];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // No need to update dashboard/barang table/transaksi table from index4.html
-            // These functions are specific to their respective pages.
-            // Ensure data is loaded first then generate report
-            loadSampleData(); // Load sample data if no data exists
-            generateLaporan(); // Generate report on page load
-        });
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSampleData(); // Pastikan data dimuat
+        generateLaporan(); // Generate report on page load
+    });
 
-        // Utility Functions
-        function formatRupiah(amount) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(amount);
+    // Utility Functions
+    function formatRupiah(amount) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(amount);
+    }
+
+    function generateLaporan() {
+        let filteredData = [...inventoryData];
+        
+        const filterKategori = document.getElementById('filterKategori').value;
+        const filterKondisi = document.getElementById('filterKondisi').value;
+        
+        if (filterKategori) {
+            filteredData = filteredData.filter(item => item.kategori === filterKategori);
         }
-
-        function generateLaporan() {
-            let filteredData = [...inventoryData]; // Start with all inventory data
-            
-            const filterKategori = document.getElementById('filterKategori').value;
-            const filterKondisi = document.getElementById('filterKondisi').value;
-            
-            if (filterKategori) {
-                filteredData = filteredData.filter(item => item.kategori === filterKategori);
-            }
-            
-            if (filterKondisi) {
-                filteredData = filteredData.filter(item => item.kondisi === filterKondisi);
-            }
-            
-            const tbody = document.getElementById('laporanTableBody');
-            tbody.innerHTML = ''; // Clear existing rows
-            
-            if (filteredData.length > 0) {
-                filteredData.forEach((item, index) => {
-                    const row = tbody.insertRow();
-                    row.innerHTML = `
-                        <td>${item.kode}</td>
-                        <td>${item.nama}</td>
-                        <td>${item.kategori}</td>
-                        <td>${item.jumlah}</td>
-                        <td><span class="status-badge status-${item.kondisi.toLowerCase()}">${item.kondisi}</span></td>
-                        <td>${formatRupiah(item.jumlah * item.harga)}</td>
-                        <td>${item.lokasi}</td>
-                    `;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data untuk laporan</td></tr>';
-            }
+        
+        if (filterKondisi) {
+            filteredData = filteredData.filter(item => item.kondisi === filterKondisi);
         }
-
-        function exportLaporan() {
-            // Call generateLaporan to get the currently filtered data
-            // This function internally updates the table based on filters,
-            // but we need the actual 'filteredData' array for export.
-            let filteredData = getFilteredInventoryData(); // Get the filtered data
-            
-            if (filteredData.length === 0) {
-                alert('Tidak ada data untuk diekspor');
-                return;
-            }
-            
-            // Create CSV content
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Kode Barang,Nama Barang,Kategori,Jumlah,Kondisi,Harga Satuan,Nilai Total,Lokasi,Keterangan,Tanggal Input\n";
-            
-            filteredData.forEach(item => {
-                const row = [
-                    item.kode,
-                    item.nama,
-                    item.kategori,
-                    item.jumlah,
-                    item.kondisi,
-                    item.harga,
-                    item.jumlah * item.harga,
-                    item.lokasi,
-                    item.keterangan || '',
-                    item.tanggal
-                ].map(field => `"${field}"`).join(',');
-                csvContent += row + "\n";
-            });
-            
-            // Create download link
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Laporan_Inventaris_DISPORA_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function printLaporan() {
-            let filteredData = getFilteredInventoryData(); // Get the filtered data
-            
-            if (filteredData.length === 0) {
-                alert('Tidak ada data untuk dicetak');
-                return;
-            }
-            
-            const printWindow = window.open('', '_blank');
-            const today = new Date().toLocaleDateString('id-ID');
-            
-            let printContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Laporan Inventaris DISPORA Kota Tangerang</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        .header { text-align: center; margin-bottom: 20px; }
-                        .header h1 { margin: 0; font-size: 18px; }
-                        .header h2 { margin: 5px 0; font-size: 16px; }
-                        .header p { margin: 0; font-size: 12px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10px; }
-                        th, td { border: 1px solid #000; padding: 5px; text-align: left; }
-                        th { background-color: #f0f0f0; font-weight: bold; }
-                        .footer { margin-top: 20px; }
-                        .signature { float: right; text-align: center; margin-top: 50px; }
-                        @media print { body { margin: 0; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>PEMERINTAH KOTA TANGERANG</h1>
-                        <h2>DINAS PEMUDA DAN OLAHRAGA KOTA TANGERANG </h2>
-                        <p>Gedung Cisadane,Jl. Ks. Tubun No.1, RT.003/RW.004, Ps. Baru, Kec. Karawaci, Kota Tangerang, Banten 15112, (021) 5576733</p>
-                        <hr style="margin: 20px 0;">
-                        <h2>LAPORAN INVENTARIS BARANG</h2>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode Barang</th>
-                                <th>Nama Barang</th>
-                                <th>Kategori</th>
-                                <th>Jumlah</th>
-                                <th>Kondisi</th>
-                                <th>Harga Satuan</th>
-                                <th>Nilai Total</th>
-                                <th>Lokasi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            let totalNilai = 0;
+        
+        const tbody = document.getElementById('laporanTableBody');
+        tbody.innerHTML = '';
+        
+        if (filteredData.length > 0) {
             filteredData.forEach((item, index) => {
-                const nilaiTotal = item.jumlah * item.harga;
-                totalNilai += nilaiTotal;
-                
-                printContent += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.kode}</td>
-                        <td>${item.nama}</td>
-                        <td>${item.kategori}</td>
-                        <td>${item.jumlah}</td>
-                        <td>${item.kondisi}</td>
-                        <td>${formatRupiah(item.harga)}</td>
-                        <td>${formatRupiah(nilaiTotal)}</td>
-                        <td>${item.lokasi}</td>
-                    </tr>
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.kode}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.kategori}</td>
+                    <td>${item.jumlah}</td>
+                    <td><span class="status-badge status-${item.kondisi.toLowerCase()}">${item.kondisi}</span></td>
+                    <td>${formatRupiah(item.jumlah * item.harga)}</td>
+                    <td>${item.lokasi}</td>
                 `;
             });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data untuk laporan</td></tr>';
+        }
+    }
+
+    function exportLaporan() {
+        let filteredData = getFilteredInventoryData();
+        
+        if (filteredData.length === 0) {
+            alert('Tidak ada data untuk diekspor');
+            return;
+        }
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Kode Barang,Nama Barang,Kategori,Jumlah,Kondisi,Harga Satuan,Nilai Total,Lokasi,Keterangan,Tanggal Input\n";
+        
+        filteredData.forEach(item => {
+            const row = [
+                item.kode,
+                item.nama,
+                item.kategori,
+                item.jumlah,
+                item.kondisi,
+                item.harga,
+                item.jumlah * item.harga,
+                item.lokasi,
+                item.keterangan || '',
+                item.tanggal
+            ].map(field => `"${field}"`).join(',');
+            csvContent += row + "\n";
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Laporan_Inventaris_DISPORA_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function printLaporan() {
+        let filteredData = getFilteredInventoryData();
+        
+        if (filteredData.length === 0) {
+            alert('Tidak ada data untuk dicetak');
+            return;
+        }
+        
+        const printWindow = window.open('', '_blank');
+        const today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'numeric', day: 'numeric' }); // Format tanggal 26/6/2025
+        
+        let printContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Laporan Inventaris DISPORA Kota Tangerang</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .header { text-align: center; margin-bottom: 20px; }
+                    .header h1 { margin: 0; font-size: 18px; }
+                    .header h2 { margin: 5px 0; font-size: 16px; }
+                    .header p { margin: 0; font-size: 12px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10px; }
+                    th, td { border: 1px solid #000; padding: 5px; text-align: left; }
+                    th { background-color: #f0f0f0; font-weight: bold; }
+                    .footer { margin-top: 20px; }
+                    .signature-container {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-top: 60px;
+                        width: 100%; /* Ensure it takes full width for alignment */
+                    }
+                    .signature-box {
+                        text-align: center;
+                        flex: 1; /* Distribute space evenly */
+                        margin: 0 20px; /* Add some margin between boxes */
+                    }
+                    .signature-box p {
+                        margin: 5px 0;
+                    }
+                    .signature-line {
+                        margin-top: 50px; /* Space for signature */
+                        border-bottom: 1px solid #000;
+                        width: 180px; /* Adjust width as needed */
+                        display: inline-block;
+                    }
+                    @media print { body { margin: 0; } }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>PEMERINTAH KOTA TANGERANG</h1>
+                    <h2>DINAS PEMUDA DAN OLAHRAGA KOTA TANGERANG </h2>
+                    <p>Gedung Cisadane,Jl. Ks. Tubun No.1, RT.003/RW.004, Ps. Baru, Kec. Karawaci, Kota Tangerang, Banten 15112, (021) 5576733</p>
+                    <hr style="margin: 20px 0;">
+                    <h2>LAPORAN INVENTARIS BARANG</h2>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Barang</th>
+                            <th>Nama Barang</th>
+                            <th>Kategori</th>
+                            <th>Jumlah</th>
+                            <th>Kondisi</th>
+                            <th>Harga Satuan</th>
+                            <th>Nilai Total</th>
+                            <th>Lokasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        let totalNilai = 0;
+        let totalJumlahBarang = 0; // Untuk menghitung total item yang ditampilkan
+        filteredData.forEach((item, index) => {
+            const nilaiTotalPerItem = item.jumlah * item.harga;
+            totalNilai += nilaiTotalPerItem;
+            totalJumlahBarang += item.jumlah; // Menambahkan jumlah item, bukan entri unik
             
             printContent += `
-                        </tbody>
-                        <tfoot>
-                            <tr style="font-weight: bold;">
-                                <td colspan="7">TOTAL NILAI INVENTARIS</td>
-                                <td>${formatRupiah(totalNilai)}</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    
-                    <div class="footer">
-                        <p>Total Barang: ${filteredData.length} item</p>
-                        <p>Total Nilai: ${formatRupiah(totalNilai)}</p>
-                       
-                    <div style="display: flex; justify-content: space-between; margin-top: 60px;">
-                        <div style="text-align: left; margin-top: 30px;">
-                            <p style="text-align: center;">Sekretaris</p>
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.kode}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.kategori}</td>
+                    <td>${item.jumlah}</td>
+                    <td>${item.kondisi}</td>
+                    <td>${formatRupiah(item.harga)}</td>
+                    <td>${formatRupiah(nilaiTotalPerItem)}</td>
+                    <td>${item.lokasi}</td>
+                </tr>
+            `;
+        });
+        
+        printContent += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold;">
+                            <td colspan="7">TOTAL NILAI INVENTARIS</td>
+                            <td>${formatRupiah(totalNilai)}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="footer">
+                    <p>Total Barang: ${filteredData.length} item unik</p>
+                    <p>Total Jumlah Barang: ${totalJumlahBarang} unit</p> <p>Total Nilai: ${formatRupiah(totalNilai)}</p>
+                   
+                    <div class="signature-container">
+                        <div class="signature-box">
+                            <p>Sekretaris</p>
                             <br><br><br>
-                            <p>(_____________________)</p>
-                            <p style="text-align: center;">NIP.</p>
+                            <p class="signature-line"></p>
+                            <p>NIP.</p>
                         </div>
-                        <div style="text-align: right;">
+                        <div class="signature-box">
                             <p>Tangerang, ${today}</p>
-                            <p style="text-align: center;">Kepala Dinas</p>
+                            <p>Kepala Dinas</p>
                             <br><br><br>
-                            <p>(_____________________)</p>
-                            <p style="text-align: center;">NIP.</p>
+                            <p class="signature-line"></p>
+                            <p>NIP.</p>
                         </div>
                     </div>
-                </body>
-                </html>
-            `;
-            
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.print();
+                </div>
+            </body>
+            </html>
+        `;
+        
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function getFilteredInventoryData() {
+        let currentFilteredData = [...inventoryData];
+        
+        const filterKategori = document.getElementById('filterKategori').value;
+        const filterKondisi = document.getElementById('filterKondisi').value;
+        
+        if (filterKategori) {
+            currentFilteredData = currentFilteredData.filter(item => item.kategori === filterKategori);
         }
-
-        // Helper function to get the current filtered data (useful for export/print)
-        function getFilteredInventoryData() {
-            let currentFilteredData = [...inventoryData]; // Start with all inventory data
-            
-            const filterKategori = document.getElementById('filterKategori').value;
-            const filterKondisi = document.getElementById('filterKondisi').value;
-            
-            if (filterKategori) {
-                currentFilteredData = currentFilteredData.filter(item => item.kategori === filterKategori);
-            }
-            
-            if (filterKondisi) {
-                currentFilteredData = currentFilteredData.filter(item => item.kondisi === filterKondisi);
-            }
-            return currentFilteredData;
+        
+        if (filterKondisi) {
+            currentFilteredData = currentFilteredData.filter(item => item.kondisi === filterKondisi);
         }
+        return currentFilteredData;
+    }
 
-
-        // Sample Data (optional - for demo purposes)
-        function loadSampleData() {
-            // Only load sample data if inventoryData is empty in localStorage
-            if (localStorage.getItem('inventoryData') === null || JSON.parse(localStorage.getItem('inventoryData')).length === 0) {
-                const sampleData = [
-                    {
-                        kode: 'OR001',
-                        nama: 'Bola Sepak',
-                        kategori: 'Olahraga',
-                        kondisi: 'Baik',
-                        jumlah: 10,
-                        harga: 150000,
-                        lokasi: 'Gudang Olahraga',
-                        keterangan: 'Bola sepak untuk kegiatan olahraga',
-                        tanggal: '2024-01-15'
-                    },
-                    {
-                        kode: 'EL001',
-                        nama: 'Komputer Desktop',
-                        kategori: 'Elektronik',
-                        kondisi: 'Baik',
-                        jumlah: 5,
-                        harga: 8000000,
-                        lokasi: 'Ruang Sekretariat',
-                        keterangan: 'Komputer untuk administrasi',
-                        tanggal: '2024-01-20'
-                    },
-                    {
-                        kode: 'FU001',
-                        nama: 'Meja Kerja',
-                        kategori: 'Furniture',
-                        kondisi: 'Baik',
-                        jumlah: 8,
-                        harga: 1500000,
-                        lokasi: 'Ruang Sekretariat',
-                        keterangan: 'Meja kerja kayu jati',
-                        tanggal: '2024-01-25'
-                    }
-                ];
-                
-                inventoryData = sampleData;
-                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
-                
-                // No need to call these from index4.html, they belong to their respective pages
-                // updateDashboard();
-                // updateBarangTable();
-                // updateKodeBarangSelect();
-                // generateLaporan() will be called after loadSampleData
-            }
+    function loadSampleData() {
+        if (localStorage.getItem('inventoryData') === null || JSON.parse(localStorage.getItem('inventoryData')).length === 0) {
+            const sampleData = [
+                {
+                    kode: 'OR001',
+                    nama: 'Bola Sepak',
+                    kategori: 'Olahraga',
+                    kondisi: 'Baik',
+                    jumlah: 10,
+                    harga: 150000,
+                    lokasi: 'Gudang Olahraga',
+                    keterangan: 'Bola sepak untuk kegiatan olahraga',
+                    tanggal: '2024-01-15'
+                },
+                {
+                    kode: 'EL001',
+                    nama: 'Komputer Desktop',
+                    kategori: 'Elektronik',
+                    kondisi: 'Baik',
+                    jumlah: 5,
+                    harga: 8000000,
+                    lokasi: 'Ruang Sekretariat',
+                    keterangan: 'Komputer untuk administrasi',
+                    tanggal: '2024-01-20'
+                },
+                {
+                    kode: 'FU001',
+                    nama: 'Meja Kerja',
+                    kategori: 'Furniture',
+                    kondisi: 'Baik',
+                    jumlah: 8,
+                    harga: 1500000,
+                    lokasi: 'Ruang Sekretariat',
+                    keterangan: 'Meja kerja kayu jati',
+                    tanggal: '2024-01-25'
+                }
+            ];
+            
+            inventoryData = sampleData;
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
         }
-
-        // Uncomment the line below to load sample data on first visit
-        loadSampleData();
-    </script>
+    }
+    loadSampleData();
+</script>
     </body>
 </html>
