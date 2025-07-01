@@ -86,5 +86,20 @@
             Need an account? <a href="#">Sign up!</a>
         </div>
     </div>
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        // Mencegah pengiriman formulir default
+        event.preventDefault();
+
+        // Anda bisa menambahkan validasi sederhana di sini jika mau
+        // const email = document.getElementById('inputEmailAddress').value;
+        // const password = document.getElementById('inputPassword').value;
+
+        // Dalam skenario GitHub Pages tanpa backend, Anda bisa langsung mengarahkan
+        // Setelah "login" dianggap berhasil.
+        // PENTING: Ini BUKAN proses login yang aman, hanya untuk simulasi/demo.
+        window.location.href = 'https://hanumaziizahh.github.io/DISPORA/';
+    });
+</script>
 </body>
 </html>
